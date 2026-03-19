@@ -8,10 +8,11 @@
   "description": "Numerology utility app with life path, birth day, attitude, and name number calculations plus lightweight interpretations.",
   "icons": [
     {
-      "src": "logo.svg",
+      "src": "logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any"
     }
   ]
 }
+
