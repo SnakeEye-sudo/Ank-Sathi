@@ -254,14 +254,25 @@ input:focus {
   color: var(--accent);
 }
 
-.analysis-text {
+.analysis-section {
+  padding: 1.25rem;
+  background: #f8fafc;
+  border-radius: 10px;
+  border-left: 4px solid var(--primary);
   font-family: 'Brawler', serif;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--text-color);
+  line-height: 1.6;
 }
 
-.analysis-text strong {
+.analysis-section strong {
   color: var(--accent);
+  display: block;
+  font-family: 'Manrope', sans-serif;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.025em;
 }
 
 /* Timeline */
