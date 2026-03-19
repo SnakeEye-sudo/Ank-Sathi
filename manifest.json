@@ -1,0 +1,17 @@
+{
+  "name": "Ank Sathi",
+  "short_name": "Ank",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#15112a",
+  "theme_color": "#15112a",
+  "description": "Numerology utility app with life path, birth day, attitude, and name number calculations plus lightweight interpretations.",
+  "icons": [
+    {
+      "src": "logo.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
