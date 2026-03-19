@@ -3,83 +3,19 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#15112a">
-  <meta name="description" content="Numerology utility app with life path, birth day, attitude, and name number calculations plus lightweight interpretations.">
+  <meta name="theme-color" content="#120e22">
+  <meta name="description" content="Detailed numerology app with moolank, bhagyank, namank, personality traits, and 12 month guidance.">
   <title>Ank Sathi</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.svg" type="image/svg+xml">
   <link rel="manifest" href="manifest.json">
   <link rel="stylesheet" href="styles.css">
 </head>
-<body data-theme="night">
-  <div class="ambient-layer">
-    <div class="ambient-orb orb-a"></div>
-    <div class="ambient-orb orb-b"></div>
-    <div class="ambient-grid"></div>
-    <div class="ambient-noise"></div>
-  </div>
-
-  <div class="page-shell">
-    <header class="hero">
-      <div class="hero-top">
-        <div class="brand-wrap">
-          <img src="logo.svg" alt="Ank Sathi logo" class="brand-logo">
-          <div>
-            <p class="hero-tag">Numerology mapper</p>
-            <h1>Ank Sathi</h1>
-          </div>
-        </div>
-        <a class="family-chip" href="https://snakeeye-sudo.github.io/Aapka-Sathi/">Aapka-Sathi family</a>
-      </div>
-
-      <div class="hero-grid">
-        <section class="hero-copy">
-          <p class="eyebrow">Symbolic number studio</p>
-          <h2 class="hero-headline">Birth date aur name se quick numerology numbers aur meanings dekho.</h2>
-          <p class="hero-text">Life path, birth day, attitude, aur name number ek clean interpretation board me calculate hote hain, taaki personal reflection easy ho.</p>
-          <div class="hero-badges">
-            <span class="hero-badge">Life path</span><span class="hero-badge">Birth day</span><span class="hero-badge">Name number</span><span class="hero-badge">Quick meanings</span>
-          </div>
-        </section>
-
-        <section class="hero-side">
-          <div class="metric-card">
-            <p class="eyebrow">Reading mode</p>
-            <h3>4 key numbers</h3>
-            <strong>Instant</strong>
-            <p class="muted">DOB + name input se ready.</p>
-          </div>
-          <div class="metric-card secondary">
-            <p class="eyebrow">Info</p>
-            <h3>Use case</h3>
-            <p class="muted">Personal reflection and curiosity.</p>
-          </div>
-        </section>
-      </div>
-    </header>
-
-    <main id="appRoot" class="app-root"></main>
-
-    <footer class="site-footer">
-      <div class="footer-brand">
-        <img src="logo.svg" alt="Ank Sathi logo">
-        <div>
-          <strong>Ank Sathi</strong>
-          <p>Number symbolism ko clean aur approachable banane ke liye.</p>
-        </div>
-      </div>
-      <nav class="footer-links">
-        <a href="about.html">About</a>
-        <a href="resources.html">Resources</a>
-        <a href="contact.html">Contact</a>
-        <a href="privacy-policy.html">Privacy</a>
-        <a href="terms.html">Terms</a>
-      </nav>
-    </footer>
-  </div>
-
+<body>
+  <main id="appRoot"></main>
   <script src="app.js"></script>
+  <script defer src="notification-prompt.js"></script>
 </body>
 </html>
