@@ -1,330 +1,224 @@
-"use strict";
-(() => {
-  // src/app.ts
-  (() => {
-    const root = document.getElementById("appRoot");
-    if (!root) return;
-    const STORAGE_KEY = "ank-sathi-profile";
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
-    root.innerHTML = `
-    <div class="app-shell">
-      <section class="topbar">
-        <div class="brand-orb" aria-hidden="true">8</div>
-        <div>
-          <p class="eyebrow">Detailed numerology app</p>
-          <h1>Ank Sathi</h1>
-        </div>
-        <div class="top-actions">
-          <span class="chip active">Moolank</span>
-          <span class="chip">Bhagyank</span>
-          <span class="chip">12 month guidance</span>
-        </div>
-      </section>
+/**
+ * Ank-Sathi | Numerology Engine v2.0
+ * Pure Logic & Real Calculations based on Chaldean & Vedic systems.
+ * Author: Er. Sangam Krishna (Aapka-Sathi Family)
+ */
 
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Naam + janm tithi reading</p>
-          <h2>Sirf number nahi, poora ank-profile.</h2>
-          <p>Yahan moolank, bhagyank, namank, atmaank, vyaktitva ank, aur personal year standard numerology reduction rules se calculate hote hain. Result ko ek user report ki tarah dikhaya gaya hai taaki app truly useful lage.</p>
-        </div>
-        <div class="hero-focus">
-          <div>
-            <p class="eyebrow">Active vibration</p>
-            <span class="focus-number" id="heroNumber">--</span>
-          </div>
-          <p id="heroMeaning">Apna naam aur DOB bharte hi yahan strongest active energy dikhegi.</p>
-          <div class="tag-row" id="heroTags"></div>
-        </div>
-      </section>
+const CHALDEAN_MAP = {
+  'A': 1, 'I': 1, 'J': 1, 'Q': 1, 'Y': 1,
+  'B': 2, 'K': 2, 'R': 2,
+  'C': 3, 'G': 3, 'L': 3, 'S': 3,
+  'D': 4, 'M': 4, 'T': 4,
+  'E': 5, 'H': 5, 'N': 5, 'X': 5,
+  'U': 6, 'V': 6, 'W': 6,
+  'O': 7, 'Z': 7,
+  'F': 8, 'P': 8
+};
 
-      <section class="profile-grid">
-        <article class="panel">
-          <div>
-            <p class="eyebrow">Input</p>
-            <h3>Apni detail bharo</h3>
-          </div>
-          <div class="form-grid">
-            <label class="field-group">
-              <span class="field-label">Full name</span>
-              <input class="text-input" id="nameInput" type="text" placeholder="Sangam Krishna">
-            </label>
-            <label class="field-group">
-              <span class="field-label">Date of birth</span>
-              <input class="text-input" id="dobInput" type="date">
-            </label>
-            <div class="hero-actions">
-              <button class="primary-btn" id="calcBtn" type="button">Reading nikalo</button>
-              <button class="ghost-btn" id="resetBtn" type="button">Reset</button>
-            </div>
-          </div>
-          <div class="quick-code">
-            <p class="eyebrow">Quick code</p>
-            <strong id="quickCode">--</strong>
-            <p id="quickSummary">Result aate hi yahan aapka short numerology code dikhega.</p>
-          </div>
-        </article>
+const NUM_DATA = {
+  1: {
+    traits: "Surya (Sun) - Leadership, Ambition, Vision.",
+    meaning: "Aap ek swabhavik neta (leader) hain. Aapka vyaktitva swatantra aur prabhavshali hai. Aap naye raste banane mein vishwas rakhte hain.",
+    destiny: "Aapka jeevan safalta aur shakti ki taraf ishara karta hai. Aapko bade faisle lene mein saksham banaya gaya hai.",
+    prediction: "Saurya shakti aapke saath hai. Nayi shuruat ke liye yeh samay uttam hai."
+  },
+  2: {
+    traits: "Chandra (Moon) - Intuition, Harmony, Sensitivity.",
+    meaning: "Aap bhavuk (emotional) aur sah-yog (cooperative) karne wale vyakti hain. Aapko shanti aur santulan pasand hai.",
+    destiny: "Aapka bhagya dusron ke saath milkar kaam karne mein hai. Aap ek acche salahkaar (advisor) ban sakte hain.",
+    prediction: "Dharya (patience) rakhein. Aapke rishte aur intuition aapka मार्गदर्शन karenge."
+  },
+  3: {
+    traits: "Guru (Jupiter) - Expression, Growth, Creativity.",
+    meaning: "Aap buddhiman, gyanwan aur rachanatmak (creative) hain. Aapka abhivyakti ka tareeka dusron ko prabhavit karta hai.",
+    destiny: "Vistar aur gyan aapke jeevan ka mool mantra hai. Aap apne gyan se duniya badalne ki kshamta rakhte hain.",
+    prediction: "Khush-mizaaj rahein. Aapki rachanatmakta aapko nayi unchaiyon par le jayegi."
+  },
+  4: {
+    traits: "Rahu - Discipline, Stability, Practicality.",
+    meaning: "Aap mehnati aur vyavaharik (practical) hain. Aap har kaam ko vyavasthit (organized) dhang se karna pasand karte hain.",
+    destiny: "Aapka jeevan adhaar (foundation) banane ke liye hai. Aapki mehnat hi aapki asli pehchan hai.",
+    prediction: "Thoda sakht rahein par badlav ke liye taiyaar rahein. Safalta mehnat se hi milegi."
+  },
+  5: {
+    traits: "Budh (Mercury) - Freedom, Change, Versatility.",
+    meaning: "Aap ek adventurer aur tezz dimaag wale vyakti hain. Aapko badlav (change) aur azadi pasand hai.",
+    destiny: "Sanchar (communication) aur vyapaar aapke bhagya mein hai. Aap har paristhiti mein dhalne ke liye bane hain.",
+    prediction: "Naye vichaar aur safar aapko nayi disha denge. Khule dimaag se sochein."
+  },
+  6: {
+    traits: "Shukra (Venus) - Love, Responsibility, Art.",
+    meaning: "Aap ek dayalu (compassionate) aur zimmedar vyakti hain. Aapko sundarta aur parivaar se prem hai.",
+    destiny: "Seva aur suvidha aapke jeevan ka hissa hain. Aap dusron ko sukoon dene ke liye bane hain.",
+    prediction: "Apne apno ka dhyan rakhein. Prem aur kala aapke jeevan mein rounak layenge."
+  },
+  7: {
+    traits: "Ketu - Introspection, Mystery, Spirituality.",
+    meaning: "Aap ek gambhir chintak aur gyaani hain. Aapko vishleshan (analysis) aur akelapan (solitude) pasand hai.",
+    destiny: "Aadhyatmikta aur Gehra gyan aapka rasta hai. Aap duniya ke piche ka satya khojne ke liye bane hain.",
+    prediction: "Antar-man ki awaaz sunein. Vishleshan aapke liye naye dwar kholega."
+  },
+  8: {
+    traits: "Shani (Saturn) - Ambition, Authority, Power.",
+    meaning: "Aap ek shaktishali aur anushasit (disciplined) vyakti hain. Aapka dhyan bade lakshya aur nyay par hota hai.",
+    destiny: "Satta aur prabandhan (management) aapke bhagya mein hai. Karmo ka phal aapko avashya milega.",
+    prediction: "Nyay priya banein. Aapki mehnat aur dhairya aapko shikhar par pahunchayega."
+  },
+  9: {
+    traits: "Mangal (Mars) - Humanity, Courage, Completion.",
+    meaning: "Aap ek niswarth sevak aur saahasi (courageous) vyakti hain. Aap manavta ke liye kaam karna pasand karte hain.",
+    destiny: "Parivartan aur samarpan aapka mission hai. Aap ek chakra ko pura karke naya aarambh karne ke liye bane hain.",
+    prediction: "Apne saahas ka upyog dusron ki madad ke liye karein. Yeh samay tyag aur unchai ka hai."
+  }
+};
 
-        <article class="panel">
-          <div>
-            <p class="eyebrow">Core numbers</p>
-            <h3>Aapka number matrix</h3>
-          </div>
-          <div class="number-grid" id="numberGrid"></div>
-        </article>
-      </section>
+const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
-      <section class="profile-grid">
-        <article class="panel">
-          <div>
-            <p class="eyebrow">Interpretation</p>
-            <h3>Aapki vibrations kya bolti hain</h3>
-          </div>
-          <div class="trait-grid" id="traitGrid"></div>
-        </article>
+// Helper to reduce number to single digit (root)
+function getRoot(num) {
+  while (num > 9) {
+    num = num.toString().split('').reduce((acc, digit) => acc + parseInt(digit), 0);
+  }
+  return num;
+}
 
-        <article class="panel">
-          <div>
-            <p class="eyebrow">Method</p>
-            <h3>Calculation ka basis</h3>
-          </div>
-          <div class="method-grid" id="methodGrid"></div>
-        </article>
-      </section>
+// Numerology Calculations
+function calculateNumerology(name, dobStr) {
+  const dob = new Date(dobStr);
+  const day = dob.getDate();
+  const month = dob.getMonth() + 1;
+  const year = dob.getFullYear();
 
-      <section class="panel">
-        <div>
-          <p class="eyebrow">12 month guidance</p>
-          <h3>Agle 12 mahino ka ank-flow</h3>
-        </div>
-        <div class="forecast-grid" id="forecastGrid"></div>
-      </section>
-    </div>
+  // 1. Moolank (Psychic)
+  const moolank = getRoot(day);
+
+  // 2. Bhagyank (Destiny)
+  const fullDOBSum = day + month + year;
+  const bhagyank = getRoot(fullDOBSum);
+
+  // 3. Namank (Name) - Chaldean
+  let namankSum = 0;
+  name.toUpperCase().split('').forEach(char => {
+    if (CHALDEAN_MAP[char]) {
+      namankSum += CHALDEAN_MAP[char];
+    }
+  });
+  const namank = getRoot(namankSum);
+
+  // 4. Personal Year for 2026 (based on system date)
+  const currentYear = 2026;
+  const personalYear = getRoot(day + month + currentYear);
+
+  return { moolank, bhagyank, namank, personalYear, day, month, currentYear };
+}
+
+// UI Controllers
+const inputScreen = document.getElementById('input-screen');
+const reportScreen = document.getElementById('report-screen');
+const form = document.getElementById('numerology-form');
+const backBtn = document.getElementById('backBtn');
+const menuToggle = document.getElementById('menuToggle');
+const appDrawer = document.getElementById('appDrawer');
+const drawerOverlay = document.getElementById('drawerOverlay');
+const closeDrawer = document.getElementById('closeDrawer');
+
+form.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const name = document.getElementById('fullName').value;
+  const dob = document.getElementById('birthDate').value;
+
+  if (name && dob) {
+    const report = calculateNumerology(name, dob);
+    generateReportUI(name, report);
+    inputScreen.classList.remove('active');
+    reportScreen.classList.add('active');
+    window.scrollTo(0,0);
+  }
+});
+
+backBtn.addEventListener('click', () => {
+  reportScreen.classList.remove('active');
+  inputScreen.classList.add('active');
+});
+
+menuToggle.addEventListener('click', () => {
+  appDrawer.classList.add('open');
+  drawerOverlay.classList.add('active');
+});
+
+[closeDrawer, drawerOverlay].forEach(el => el.addEventListener('click', () => {
+  appDrawer.classList.remove('open');
+  drawerOverlay.classList.remove('active');
+}));
+
+function generateReportUI(name, data) {
+  document.getElementById('reportNameHeader').textContent = name;
+  
+  // Update Numbers
+  document.getElementById('moolankVal').textContent = data.moolank;
+  document.getElementById('moolankShort').textContent = NUM_DATA[data.moolank].traits;
+  
+  document.getElementById('bhagyankVal').textContent = data.bhagyank;
+  document.getElementById('bhagyankShort').textContent = NUM_DATA[data.bhagyank].traits;
+  
+  document.getElementById('namankVal').textContent = data.namank;
+  document.getElementById('namankShort').textContent = NUM_DATA[data.namank].traits;
+
+  // Analysis Content
+  const analysisHTML = `
+    <p><strong>Moolank ${data.moolank}:</strong> ${NUM_DATA[data.moolank].meaning}</p>
+    <br>
+    <p><strong>Bhagyank ${data.bhagyank}:</strong> ${NUM_DATA[data.bhagyank].destiny}</p>
+    <br>
+    <p><strong>Namank ${data.namank}:</strong> Aapke naam ki vibration aapke ${NUM_DATA[data.namank].traits.split('-')[0]} ko darshata hai.</p>
   `;
-    const meanings = {
-      1: { title: "Leader", energy: "Initiative, ambition, self-start", strength: "Nayi shuruat aur decision making", caution: "Zyada ego ya impatience se bachna" },
-      2: { title: "Peacemaker", energy: "Sensitivity, harmony, partnership", strength: "Rishton ko handle karna aur diplomacy", caution: "Overthinking aur self-doubt se bachna" },
-      3: { title: "Creator", energy: "Expression, art, communication", strength: "Creativity aur public charm", caution: "Scattered focus se bachna" },
-      4: { title: "Builder", energy: "Discipline, routine, foundation", strength: "Consistency aur practical results", caution: "Rigidity aur overload se bachna" },
-      5: { title: "Explorer", energy: "Movement, change, freedom", strength: "Adaptability aur bold shifts", caution: "Restless decisions se bachna" },
-      6: { title: "Guardian", energy: "Care, beauty, responsibility", strength: "Family, healing, nurturing", caution: "Har cheez ka bojh akela mat uthao" },
-      7: { title: "Seeker", energy: "Depth, study, intuition", strength: "Research aur inner clarity", caution: "Isolation aur trust issues se bachna" },
-      8: { title: "Power Maker", energy: "Authority, ambition, material scale", strength: "Execution aur status building", caution: "Control ya harshness se bachna" },
-      9: { title: "Humanitarian", energy: "Completion, service, compassion", strength: "Big-picture thinking aur empathy", caution: "Emotional drain se bachna" },
-      11: { title: "Intuitive Master", energy: "Inspiration, vision, spiritual sensitivity", strength: "Insight aur powerful intuition", caution: "Nervous overload se bachna" },
-      22: { title: "Master Builder", energy: "Vision ko reality me utarna", strength: "Large impact aur disciplined creation", caution: "Pressure aur fear of failure se bachna" },
-      33: { title: "Master Teacher", energy: "Healing, devotion, upliftment", strength: "Deep seva aur emotional wisdom", caution: "Self-sacrifice ko limit me rakho" }
-    };
-    const monthThemes = {
-      1: { theme: "Nayi shuruat", advice: "Initiative lo, pending kaam khol do, fresh decision lo." },
-      2: { theme: "Sambandh aur patience", advice: "Soft communication rakho, results force mat karo." },
-      3: { theme: "Expression aur creativity", advice: "Presentation, networking, content aur art me shine karo." },
-      4: { theme: "System aur discipline", advice: "Routine set karo, finances aur planning tidy rakho." },
-      5: { theme: "Change aur movement", advice: "Travel, shifts, experimentation ke liye open raho." },
-      6: { theme: "Family aur duty", advice: "Ghar, health, beauty aur care-oriented kaam par dhyan do." },
-      7: { theme: "Study aur inner work", advice: "Research, exam prep, contemplation aur deep focus best rahega." },
-      8: { theme: "Results aur money", advice: "Career, authority, deals aur practical outcomes par \u091C\u094B\u0930 \u0926\u094B." },
-      9: { theme: "Release aur completion", advice: "Purane loops band karo, forgive karo, cleanup karo." },
-      11: { theme: "Intuitive boost", advice: "Strong ideas ko lightly mat lo, journal aur observe karo." },
-      22: { theme: "Big build month", advice: "Long-term project ko structure do aur execution start karo." },
-      33: { theme: "Service aur healing", advice: "Dusron ko uplift karte hue apni energy ko bhi protect karo." }
-    };
-    const methodGrid = document.getElementById("methodGrid");
-    const numberGrid = document.getElementById("numberGrid");
-    const traitGrid = document.getElementById("traitGrid");
-    const forecastGrid = document.getElementById("forecastGrid");
-    const heroNumber = document.getElementById("heroNumber");
-    const heroMeaning = document.getElementById("heroMeaning");
-    const heroTags = document.getElementById("heroTags");
-    const quickCode = document.getElementById("quickCode");
-    const quickSummary = document.getElementById("quickSummary");
-    const nameInput = document.getElementById("nameInput");
-    const dobInput = document.getElementById("dobInput");
-    function reduceNumber(value) {
-      let current = value;
-      while (current > 9 && current !== 11 && current !== 22 && current !== 33) {
-        current = String(current).split("").reduce((sum, digit) => sum + Number(digit), 0);
-      }
-      return current;
-    }
-    function letterValue(char) {
-      return (char.charCodeAt(0) - 65) % 9 + 1;
-    }
-    function cleanName(name) {
-      return name.toUpperCase().replace(/[^A-Z]/g, "");
-    }
-    function nameSum(name, picker) {
-      return cleanName(name).split("").filter(picker).reduce((sum, char) => sum + letterValue(char), 0);
-    }
-    function numberMeaning(value) {
-      return meanings[value] || meanings[reduceNumber(value)] || meanings[1];
-    }
-    function personalYear(month, day, year) {
-      const universalYear = reduceNumber(String(year).split("").reduce((sum, digit) => sum + Number(digit), 0));
-      return reduceNumber(month + day + universalYear);
-    }
-    function calculateReading(name, dob) {
-      if (!dob) return null;
-      const [year, month, day] = dob.split("-").map(Number);
-      const allDigitsTotal = dob.replace(/-/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
-      const nameTotal = nameSum(name, () => true);
-      const vowels = nameSum(name, (char) => "AEIOU".includes(char));
-      const consonants = nameSum(name, (char) => !"AEIOU".includes(char));
-      const currentYear = (/* @__PURE__ */ new Date()).getFullYear();
-      const moolank = reduceNumber(day);
-      const bhagyank = reduceNumber(allDigitsTotal);
-      const namank = reduceNumber(nameTotal || 0);
-      const atmaank = reduceNumber(vowels || 0);
-      const vyaktitva = reduceNumber(consonants || 0);
-      const maturity = reduceNumber(bhagyank + namank);
-      const attitude = reduceNumber(day + month);
-      return {
-        moolank,
-        bhagyank,
-        namank,
-        atmaank,
-        vyaktitva,
-        maturity,
-        attitude,
-        personalYear: personalYear(month, day, currentYear)
-      };
-    }
-    function buildForecast(dob, reading) {
-      const [, birthMonth, birthDay] = dob.split("-").map(Number);
-      const now = /* @__PURE__ */ new Date();
-      return Array.from({ length: 12 }, (_, index) => {
-        const target = new Date(now.getFullYear(), now.getMonth() + index, 1);
-        const yearValue = personalYear(birthMonth, birthDay, target.getFullYear());
-        const personalMonthValue = reduceNumber(yearValue + (target.getMonth() + 1));
-        const info = monthThemes[personalMonthValue] || monthThemes[reduceNumber(personalMonthValue)];
-        return {
-          label: new Intl.DateTimeFormat("hi-IN", { month: "long", year: "numeric" }).format(target),
-          value: personalMonthValue,
-          theme: info.theme,
-          advice: info.advice
-        };
-      });
-    }
-    function renderMethod() {
-      methodGrid.innerHTML = `
-      <article class="method-card">
-        <p class="micro-label">Moolank</p>
-        <strong>Birth day reduce karke</strong>
-        <p>Sirf janm ki date ka vibration, jo natural style batata hai.</p>
-      </article>
-      <article class="method-card">
-        <p class="micro-label">Bhagyank</p>
-        <strong>Pure DOB digits reduce karke</strong>
-        <p>Life path ya destiny flow, long-term direction ke liye.</p>
-      </article>
-      <article class="method-card">
-        <p class="micro-label">Namank</p>
-        <strong>Name letters ka total</strong>
-        <p>Pythagorean 1-9 mapping se naam ki public vibration.</p>
-      </article>
-      <article class="method-card">
-        <p class="micro-label">12 month</p>
-        <strong>Personal year + personal month</strong>
-        <p>Har mahine ke liye numerology theme aur practical guidance.</p>
-      </article>
+  document.getElementById('fullAnalysis').innerHTML = analysisHTML;
+
+  // 12-Month Timeline
+  const timeline = document.getElementById('futureTimeline');
+  timeline.innerHTML = '';
+  
+  // Start from current month (March 2026 is system context)
+  let startMonth = 2; // Index for March
+  let currentYear = 2026;
+
+  for (let i = 0; i < 12; i++) {
+    const monthIdx = (startMonth + i) % 12;
+    const yearMod = Math.floor((startMonth + i) / 12);
+    const displayYear = currentYear + yearMod;
+    
+    // Personal Month Calculation: Personal Year + Month Number
+    const pMonth = getRoot(data.personalYear + (monthIdx + 1));
+    
+    const monthDiv = document.createElement('div');
+    monthDiv.className = 'month-item';
+    monthDiv.innerHTML = `
+      <div class="month-header">
+        <span class="month-name">${MONTHS[monthIdx]} ${displayYear}</span>
+        <span class="month-tag">Vibration ${pMonth}</span>
+      </div>
+      <p class="month-text">${getForecast(pMonth)}</p>
     `;
-    }
-    function renderReading(name, dob) {
-      const reading = calculateReading(name, dob);
-      if (!reading) return;
-      const strongest = [reading.bhagyank, reading.namank, reading.personalYear].sort((a, b) => b - a)[0];
-      const mainMeaning = numberMeaning(reading.bhagyank);
-      const forecast = buildForecast(dob, reading);
-      const nameLabel = name.trim() || "Aap";
-      heroNumber.textContent = `${reading.bhagyank}`;
-      heroMeaning.textContent = `${nameLabel} ki core life direction ${mainMeaning.title.toLowerCase()} vibration dikhati hai: ${mainMeaning.energy}.`;
-      heroTags.innerHTML = `
-      <span class="chip active">Moolank ${reading.moolank}</span>
-      <span class="chip">Namank ${reading.namank}</span>
-      <span class="chip">Personal year ${reading.personalYear}</span>
-    `;
-      quickCode.textContent = `${reading.moolank} \u2022 ${reading.bhagyank} \u2022 ${reading.namank}`;
-      quickSummary.textContent = `${nameLabel} ka short code dikhata hai ki aapka natural mode ${numberMeaning(reading.moolank).title.toLowerCase()} hai, jabki life path ${mainMeaning.title.toLowerCase()} track par chal raha hai.`;
-      const cards = [
-        ["Moolank", reading.moolank, "Janm ki asli surface energy"],
-        ["Bhagyank", reading.bhagyank, "Long-term life path"],
-        ["Namank", reading.namank, "Naam ki duniya ko dikhne wali vibration"],
-        ["Atmaank", reading.atmaank, "Dil ki andar wali desire"],
-        ["Vyaktitva", reading.vyaktitva, "Outer image aur impression"],
-        ["Maturity", reading.maturity, "Age ke saath settle hone wala tone"]
-      ];
-      numberGrid.innerHTML = cards.map(([label, value, note]) => `
-      <article class="number-card">
-        <p class="micro-label">${label}</p>
-        <strong>${numberMeaning(value).title}</strong>
-        <span class="number-value">${value}</span>
-        <p>${note}</p>
-      </article>
-    `).join("");
-      const traits = [
-        {
-          label: "Core vibe",
-          value: reading.bhagyank,
-          text: `${mainMeaning.energy}. Strength: ${mainMeaning.strength}.`
-        },
-        {
-          label: "Relationship style",
-          value: reading.atmaank,
-          text: `${numberMeaning(reading.atmaank).energy}. Dil ke level par aapko yahi cheez pull karti hai.`
-        },
-        {
-          label: "Public image",
-          value: reading.vyaktitva,
-          text: `${numberMeaning(reading.vyaktitva).strength}. Log aapko isi lens se padhte hain.`
-        },
-        {
-          label: "Current year focus",
-          value: reading.personalYear,
-          text: `${monthThemes[reading.personalYear]?.theme || "Special flow"}: ${(monthThemes[reading.personalYear] || monthThemes[reduceNumber(reading.personalYear)]).advice}`
-        },
-        {
-          label: "Attitude number",
-          value: reading.attitude,
-          text: `${numberMeaning(reading.attitude).energy}. First reaction aur daily tone ko yeh influence karta hai.`
-        },
-        {
-          label: "Watch-out",
-          value: strongest,
-          text: numberMeaning(strongest).caution
-        }
-      ];
-      traitGrid.innerHTML = traits.map((trait) => `
-      <article class="trait-card">
-        <p class="micro-label">${trait.label}</p>
-        <strong>${numberMeaning(trait.value).title} ${trait.value}</strong>
-        <p>${trait.text}</p>
-      </article>
-    `).join("");
-      forecastGrid.innerHTML = forecast.map((month) => `
-      <article class="month-card">
-        <p class="micro-label">${month.label}</p>
-        <strong>Personal month ${month.value}</strong>
-        <span class="month-theme">${month.theme}</span>
-        <p>${month.advice}</p>
-      </article>
-    `).join("");
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ name, dob }));
-    }
-    function seedDefaults() {
-      if (nameInput) nameInput.value = saved.name || "Sangam Krishna";
-      if (dobInput) dobInput.value = saved.dob || "1995-09-11";
-    }
-    document.getElementById("calcBtn")?.addEventListener("click", () => {
-      renderReading(nameInput?.value || "", dobInput?.value || "");
-    });
-    document.getElementById("resetBtn")?.addEventListener("click", () => {
-      if (nameInput) nameInput.value = "";
-      if (dobInput) dobInput.value = "";
-      localStorage.removeItem(STORAGE_KEY);
-      seedDefaults();
-      renderReading(nameInput?.value || "", dobInput?.value || "");
-    });
-    renderMethod();
-    seedDefaults();
-    renderReading(nameInput?.value || "", dobInput?.value || "");
-  })();
-})();
+    timeline.appendChild(monthDiv);
+  }
+}
+
+function getForecast(num) {
+  const forecasts = {
+    1: "Naye vichaar aur projects shuru karne ke liye behtareen samay.",
+    2: "Sajidhaari (partnership) aur sabrr (patience) ka mahina.",
+    3: "Social rehne aur apni creative side dikhane ka mauka.",
+    4: "Kadi mehnat aur apne kaam ko vyavasthit karne ka samay.",
+    5: "Naye badlav aur travel ke mauke mil sakte hain.",
+    6: "Parivaar aur ghar ki zimmedariyon par dhyan dega.",
+    7: "Sikhte rahiye aur khud par vishleshan karein.",
+    8: "Apne carrier aur dhan (finance) par focus karne ka samay.",
+    9: "Purane kaamo ko khatam karke naya rasta dekhne ka mahina."
+  };
+  return forecasts[num];
+}
+
+// Download/Share (Simulated)
+document.getElementById('downloadBtn').onclick = () => {
+    alert("Premium Feature: Aapka PDF report taiyaar ho raha hai aur jald hi aapke phone mein save ho jayega. (Simulation Mode)");
+};

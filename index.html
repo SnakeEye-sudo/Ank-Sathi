@@ -1,23 +1,127 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#120e22">
-  <meta name="description" content="Detailed numerology app with moolank, bhagyank, namank, personality traits, and 12 month guidance.">
-  <title>Ank Sathi</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ank-Sathi | Realistic Numerology</title>
+  <meta name="description" content="Ank-Sathi ek premium Numerology app hai jo aapke naam aur janm tithi se moolank, bhagyank aur 12-month future prediction nikalta hai.">
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#f59e0b">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" href="logo.png">
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Brawler:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=1.1">
 </head>
-<body>
-  <main id="appRoot"></main>
+<body data-theme="light">
+  <div class="app-container">
+    <header class="app-header">
+      <div class="brand">
+        <img src="logo.png" alt="Ank-Sathi" class="app-icon">
+        <div class="brand-text">
+          <h1>Ank-Sathi</h1>
+          <p>Aapka Numerology Companion</p>
+        </div>
+      </div>
+      <button class="menu-trigger" id="menuToggle" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </header>
+
+    <main class="app-content">
+      <section id="input-screen" class="screen active">
+        <div class="card intro-card">
+          <p class="chip">Aapka-Sathi Family</p>
+          <h2>Apna Numerology Report Nikalein</h2>
+          <p class="muted">Apna pura naam aur sahi janm tithi bhariye taaki hum aapke moolank, bhagyank aur aane wale 12 mahino ka sahi anumaan laga sakein.</p>
+        </div>
+
+        <form id="numerology-form" class="card form-card">
+          <div class="field-group">
+            <label for="fullName">Pura Sahi Naam (Full Name)</label>
+            <input type="text" id="fullName" placeholder="Jaise: Sangam Krishna" required>
+            <small class="hint">Chaldean system ke liye hum aapke naam ke vibration ka upyog karte hain.</small>
+          </div>
+
+          <div class="field-group">
+            <label for="birthDate">Janm Tithi (Date of Birth)</label>
+            <input type="date" id="birthDate" required>
+          </div>
+
+          <button type="submit" class="primary-btn">Report Generative Karein</button>
+        </form>
+      </section>
+
+      <section id="report-screen" class="screen">
+        <div class="report-header">
+          <button id="backBtn" class="back-link">← Phir se bhariye</button>
+          <h2>Aapka Detailed Report</h2>
+          <div id="reportNameHeader" class="name-display"></div>
+        </div>
+
+        <div class="report-grid">
+          <!-- Main Numbers -->
+          <div class="main-numbers">
+            <div class="num-card" data-num="moolank">
+              <div class="num-value" id="moolankVal">?</div>
+              <div class="num-label">Moolank (Psychic)</div>
+              <p class="num-short" id="moolankShort"></p>
+            </div>
+            <div class="num-card" data-num="bhagyank">
+              <div class="num-value" id="bhagyankVal">?</div>
+              <div class="num-label">Bhagyank (Destiny)</div>
+              <p class="num-short" id="bhagyankShort"></p>
+            </div>
+            <div class="num-card" data-num="namank">
+              <div class="num-value" id="namankVal">?</div>
+              <div class="num-label">Namank (Name)</div>
+              <p class="num-short" id="namankShort"></p>
+            </div>
+          </div>
+
+          <!-- Deep Analysis -->
+          <div class="card detail-card">
+            <h3>Pura Vishleshan (Analysis)</h3>
+            <div id="fullAnalysis" class="analysis-text"></div>
+          </div>
+
+          <!-- 12 Month Future -->
+          <div class="card future-card">
+            <h3>Aane wale 12 Mahino ka Future</h3>
+            <p class="muted">Aapke 'Personal Year' aur 'Personal Month' vibrations par adharit.</p>
+            <div id="futureTimeline" class="timeline-stack"></div>
+          </div>
+        </div>
+
+        <div class="report-footer">
+          <button id="downloadBtn" class="secondary-btn">Report Save Karein</button>
+          <a href="https://snakeeye-sudo.github.io/Aapka-Sathi/" class="family-link">Aapka-Sathi Hub par lautein</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Side Drawer -->
+    <aside class="drawer" id="appDrawer">
+      <div class="drawer-header">
+        <strong>Ank-Sathi Menu</strong>
+        <button id="closeDrawer">&times;</button>
+      </div>
+      <nav class="drawer-nav">
+        <a href="about.html">About Numerology</a>
+        <a href="resources.html">Learning Resources</a>
+        <a href="contact.html">Support</a>
+        <hr>
+        <div class="drawer-info">
+          <p>Version 2.0 (Premium)</p>
+          <p>By Er. Sangam Krishna</p>
+        </div>
+      </nav>
+    </aside>
+
+    <div class="overlay" id="drawerOverlay"></div>
+  </div>
+
   <script src="app.js"></script>
-  <script defer src="notification-prompt.js"></script>
 </body>
 </html>
-
-
